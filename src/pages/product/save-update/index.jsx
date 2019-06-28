@@ -115,14 +115,50 @@ class SaveUpdate extends Component{
 
         let pCategoryId = '0';
         let categoryId = '';
-        
+
+        if (categoriesId.length === 1) {
+          categoryId = categoriesId[0];
+        } else {
+          pCategoryId = categoriesId[0];
+          categoryId = categoriesId[1];
+        }
+
+        let promise = null;
+
+        const product = this.props.location.state;
+        const options = { name, desc, price, categoryId, pCategoryId, detail };
+        //发送请求
+        if (product) {
+          //更新/修改
+          options._id = product._id;
+          promise = reqUpdateProduct(options);
+        }  else {
+          //添加
+          promise = reqAddProduct(options);
+        }
+
+        const result = await promise;
+
+        if (result) {
+          //请求成功
+          //返回到index页面，并且要显示商品
+          this.props.history.push('/product/index');
+        }
       }
     })
 
   };
 
+  goBack = () => {
+    this.props.history.goBack();
+  };
+
   render() {
     const { options } = this.state;
+    const { getFieldDecorator } = this.props.form;
+
+    //如果是添加产品，product是undefined，如果是修改产品，product是对象
+  const product = this.props.location.state;
 
     const formItemLayout = {
       labelCol: {
@@ -138,12 +174,48 @@ class SaveUpdate extends Component{
     return <Card title={<div className="product-title"><Icon type="arrow-left" className='arrow-icon'/><span>添加商品</span></div>}>
     <Form {...formItemLayout} onSubmit={this.addProduct}>
       <Item label="商品名称">
-        <Input placeholder="请输入商品描述 "/>
+        {
+          getFieldDecorator(
+            'name',
+            {
+              rules: [
+                {required:true, message: '请输入商品名称'}
+              ],
+              initialValue: product ? product.name : ''
+
+        }
+          )(
+            <Input placeholder="请输入商品描述 "/>
+          )
+        }
+
       </Item>
       <Item label="商品描述">
-        <Input placeholder="请输入商品描述"/>
+        {
+          getFieldDecorator(
+            'desc',
+            {
+              rules: [
+                {required: true, message: '请输入商品描述'}
+              ],
+              initialValue: product ? product.desc : ''
+            }
+          )(
+            <Input placeholder="请输入商品描述"/>
+          )
+        }
       </Item>
       <Item label="选择分类" wrapperCol={{span: 5}}>
+        {
+          getFieldDecorator(
+            'categoriesId',
+            {
+              rules: [
+                {required:true, message: '请选择分类'}
+              ]，
+            }
+          )
+        }
         <Cascader
           options={options}
           loadData={this.loadData}
