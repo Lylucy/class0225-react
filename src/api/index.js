@@ -31,7 +31,7 @@ export const reqWeather = function () {
     cancel = jsonp(`http://api.map.baidu.com/telematics/v3/weather?location=深圳&output=json&ak=3p49MVra6urFRGOT9s8UBWr2`, {}, function (err, data) {
       try {
         if (!err) {
-          const { dayPictureUrl, weather } = data.results[0].weather_data[0];
+          const {dayPictureUrl, weather} = data.results[0].weather_data[0];
           resolve({
             weatherImg: dayPictureUrl,
             weather
@@ -47,11 +47,7 @@ export const reqWeather = function () {
     });
   });
 
-  return {
-    promise,
-    cancel
-  }
-};
+}
 
 
 
@@ -61,3 +57,10 @@ export const reqAddCategory = (parentId, categoryName) => ajax('/manage/category
 
 export const reqUpdateCategoryName = (categoryId, categoryName) => ajax('/manage/category/update', {categoryId, categoryName}, 'POST');
 
+export const reqProducts = (pageNum, pageSize) => ajax('/manage/product/list', {pageNum, pageSize});
+
+export const reqAddProduct = ({name, desc, price, categoryId, pCategoryId, detail}) => ajax('/manage/product/add', {name, desc, price, categoryId, pCategoryId, detail}, 'POST');
+
+export const reqUpdateProduct = ({name, desc, price, categoryId, pCategoryId, detail, _id}) => ajax('/manage/product/update', {name, desc, price, categoryId, pCategoryId, detail, _id}, 'POST');
+
+export const reqDeleteProductImg = (name, id) => ajax('/manage/img/delete', {name, id}, 'POST');
